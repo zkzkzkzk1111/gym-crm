@@ -1,10 +1,7 @@
 ###### Build Stage #####
-FROM node:22-alpine AS build
+FROM node:22-slim AS build
 LABEL author="Harry Ho"
 WORKDIR /app
-
-# Alpine Linux에 빌드 도구 설치
-RUN apk add --no-cache python3 make g++
 
 # 의존성 설치를 위한 package 파일 복사
 COPY package*.json ./
