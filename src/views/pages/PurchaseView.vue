@@ -10,12 +10,15 @@ import { router } from "@/router";
 import { toTitleCase } from "@/utils/locales/format";
 
 const headers = [
-  { title: "Reference No.", key: "reference", algin: "start" },
-  { title: "Customer", key: "customer", algin: "start" },
-  { title: "Amount", key: "amount", algin: "end" },
-  { title: "Shipping Date", key: "shippingDate", algin: "end" },
-  { title: "Delivery", key: "delivery", algin: "start" },
-  { title: "", key: "id", algin: "end" },
+  { title: "번호", key: "idx", algin: "start" },
+  { title: "타입", key: "type", algin: "start" },
+  { title: "상품명", key: "name", algin: "end" },
+  { title: "구매자", key: "buyer", algin: "end" },
+  { title: "갯수", key: "cnt", algin: "start" },
+  { title: "가격", key: "price", algin: "end" },
+  { title: "결제수단", key: "paymentMethod", algin: "end" },
+  { title: "결제일", key: "paidAt", algin: "end" },
+  { title: "상태", key: "statusName", algin: "end" },
 ];
 
 const orderStore = useOrdersStore();
@@ -106,10 +109,7 @@ function getColor(deliveryStatus: string): string {
                   <v-table density="compact">
                     <tbody class="bg-surface-light">
                       <tr>
-                        <th>Street</th>
-                        <th>City</th>
-                        <th>County</th>
-                        <th>Zip Code</th>
+                        <th>phone</th>
                       </tr>
                     </tbody>
 
@@ -118,9 +118,7 @@ function getColor(deliveryStatus: string): string {
                         <td>
                           {{ item.shippingAddress.street }}
                         </td>
-                        <td>{{ item.shippingAddress.city }}</td>
-                        <td>{{ item.shippingAddress.country }}</td>
-                        <td>{{ item.shippingAddress.zipcode }}</td>
+
                       </tr>
                     </tbody>
                   </v-table>

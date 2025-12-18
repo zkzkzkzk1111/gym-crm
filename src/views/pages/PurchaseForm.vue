@@ -204,7 +204,7 @@ async function submit(event: any) {
                                 </v-btn>
 
                                 <v-btn @click="onCancel" color="primary" variant="outlined">
-                                    Cancel
+                                  취소
                                 </v-btn>
                             </div>
                         </v-col>
