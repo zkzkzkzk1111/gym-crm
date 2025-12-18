@@ -1,15 +1,13 @@
 ###### Build Stage #####
-FROM node:22-slim AS build
+FROM node:22 AS build
 LABEL author="Harry Ho"
 WORKDIR /app
 
 # 의존성 설치를 위한 package 파일 복사
 COPY package*.json ./
 
-# npm 캐시 정리 및 의존성 설치
-RUN npm cache clean --force && \
-    npm install --legacy-peer-deps && \
-    npm rebuild
+# 의존성 설치
+RUN npm install --legacy-peer-deps
 
 # 소스 코드 복사
 COPY . .
