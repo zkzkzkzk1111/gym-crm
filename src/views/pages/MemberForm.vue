@@ -94,7 +94,7 @@ const phoneRules = [
 ];
 
 function onCancel() {
-    router.replace({ path: `/members` });
+    router.replace({ path: `/Member` });
 }
 
 async function submit(event: Event) {
@@ -132,7 +132,7 @@ async function submit(event: Event) {
         }
 
         if (results.success) {
-            router.replace({ path: '/members' });
+            router.replace({ path: '/Member' });
         }
         loading.value = false;
     }

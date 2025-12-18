@@ -56,7 +56,7 @@ const phoneRules = [
 ];
 
 function onCancel() {
-    router.replace({ path: `/staffs` });
+    router.replace({ path: `/Staff` });
 }
 
 async function submit(event: Event) {
@@ -83,7 +83,7 @@ async function submit(event: Event) {
         }
 
         if (results.success) {
-            router.replace({ path: '/staffs' });
+            router.replace({ path: '/Staff' });
         }
         loading.value = false;
     }
