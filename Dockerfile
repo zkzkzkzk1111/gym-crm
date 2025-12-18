@@ -1,6 +1,6 @@
 ###### Build Stage #####
 FROM node:22 AS build
-LABEL author="Harry Ho"
+LABEL author="ditegym"
 WORKDIR /app
 
 # 의존성 설치를 위한 package 파일 복사
