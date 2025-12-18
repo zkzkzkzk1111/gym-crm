@@ -1,1 +1,0 @@
-import{x as t,K as r,aL as e,c as a,b7 as o,o as s}from"./index-ChThWpwh.js";const d=t({__name:"Loading",setup(n){return r().isAuthenticated()?e.replace({path:"/error"}):e.replace({path:"/notfound"}),(u,p)=>(s(),a(o,{color:"primary",indeterminate:"",size:96,width:7}))}});export{d as default};

@@ -1,1 +1,0 @@
-import{x as a,c as e,w as t,aa as o,o as s,f as n,A as r,a8 as c}from"./index-ChThWpwh.js";const l=a({__name:"BlankLayout",setup(p){return(u,_)=>(s(),e(o,null,{default:t(()=>[n(r(c))]),_:1}))}});export{l as default};
