@@ -105,8 +105,8 @@ const AVATAR_PLACEHOLDER = "/src/assets/images/customer/avatar-0.webp";
 
         <!-- 액션 버튼 -->
         <div class="mt-4">
-          <v-btn color="success" variant="elevated" block size="large" @click="emit('purchase')">
-            <v-icon left>mdi-cart-plus</v-icon>
+          <v-btn variant="elevated" block size="large" @click="emit('purchase')" class="purchase-btn">
+            <v-icon start>$creditCard</v-icon>
             구매하기
           </v-btn>
         </div>
@@ -114,3 +114,10 @@ const AVATAR_PLACEHOLDER = "/src/assets/images/customer/avatar-0.webp";
     </v-card>
   </v-navigation-drawer>
 </template>
+
+<style scoped>
+.purchase-btn {
+  background: #121212 !important;
+  color: white !important;
+}
+</style>

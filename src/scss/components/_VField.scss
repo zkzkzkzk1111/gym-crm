@@ -7,3 +7,7 @@
 .v-locale--is-ltr .v-field--variant-outlined .v-field__outline__end {
   border-radius: 0 $border-radius-root $border-radius-root 0;
 }
+
+.v-field-label {
+  color: #121212 !important;
+}

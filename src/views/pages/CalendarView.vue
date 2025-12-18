@@ -13,6 +13,7 @@ import { useGoodsStore } from '@/stores/goods';
 import { useMembersStore } from '@/stores/members';
 import { useStaffStore } from '@/stores/staff';
 import { useEventStore } from '@/stores/event';
+import { useClassStore } from '@/stores/class';
 import { storeToRefs } from 'pinia';
 import type { EventRequest } from '@/models/Event';
 import { eventService } from '@/services/eventService';
@@ -35,10 +36,12 @@ const goodsStore = useGoodsStore();
 const membersStore = useMembersStore();
 const staffStore = useStaffStore();
 const eventStore = useEventStore();
+const classStore = useClassStore();
 const { goodsList } = storeToRefs(goodsStore);
 const { members } = storeToRefs(membersStore);
 const { staffList } = storeToRefs(staffStore);
 const { eventList } = storeToRefs(eventStore);
+const { classList } = storeToRefs(classStore);
 
 const calendarOptions = ref<CalendarOptions>({
   plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin],
@@ -73,28 +76,79 @@ const calendarOptions = ref<CalendarOptions>({
     }
 
     const event = arg.event;
-    const props = event.extendedProps;
 
     let timeText = '';
     if (event.allDay) {
       timeText = '[종일]';
-    } else{
-      timeText = `[${formatTime(props.startTime)} ~ ${formatTime(props.endTime)}]`;
+    } else {
+      // event.start와 event.end는 Date 객체입니다
+      const startDate = event.start;
+      const endDate = event.end;
+
+      if (startDate && endDate) {
+        const startTime = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}:00`;
+        const endTime = `${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}:00`;
+        timeText = `[${formatTime(startTime)} ~ ${formatTime(endTime)}]`;
+      }
     }
 
-    const arrayOfDomNodes = [];
+    const contentDiv = document.createElement('div');
+    contentDiv.style.display = 'flex';
+    contentDiv.style.gap = '4px';
 
-    const timeDiv = document.createElement('div');
-    timeDiv.className = 'fc-event-time';
-    timeDiv.innerText = timeText;
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'fc-event-time';
+    timeSpan.innerText = timeText;
 
-    const titleDiv = document.createElement('div');
-    titleDiv.className = 'fc-event-title';
-    titleDiv.innerText = event.title;
+    // 제목 및 부가 정보 구성
+    const props = event.extendedProps;
+    let titleText = event.title;
 
-    arrayOfDomNodes.push(timeDiv, titleDiv);
+    // 상품 정보
+    if (props.goodsIdx) {
+      const goods = goodsList.value.find(g => g.idx === props.goodsIdx);
+      if (goods) {
+        titleText += ` (${goods.goodsName})`;
+      }
+    }
 
-    return { domNodes: arrayOfDomNodes };
+    // 수업 정보
+    if (props.classIdx) {
+      const classInfo = classList.value.find(c => c.idx === props.classIdx);
+      if (classInfo) {
+        titleText += ` (${classInfo.className})`;
+      }
+    }
+
+    // 회원 정보
+    if (props.memberIdx) {
+      const member = members.value.find(m => m.idx === props.memberIdx);
+      if (member) {
+        titleText += ` (${member.userName})`;
+      }
+    }
+
+    // 강사 정보
+    if (props.staffIdx) {
+      const staff = staffList.value.find(s => s.idx === props.staffIdx);
+      if (staff) {
+        titleText += ` (${staff.name})`;
+      }
+    }
+
+    // 메모 정보
+    if (props.memo) {
+      titleText += ` (${props.memo})`;
+    }
+
+    const titleSpan = document.createElement('span');
+    titleSpan.className = 'fc-event-title';
+    titleSpan.innerText = titleText;
+
+    contentDiv.appendChild(timeSpan);
+    contentDiv.appendChild(titleSpan);
+
+    return { domNodes: [contentDiv] };
   }
 });
 
@@ -103,6 +157,7 @@ const dialog = ref(false);
 const editDialog = ref(false);
 const eventTitle = ref('');
 const goodsIdx = ref<number | null>(null);
+const classIdx = ref<number | null>(null);
 const staffIdx = ref<number | null>(null);
 const memberIdx = ref<number | null>(null);
 const eventStart = ref('');
@@ -195,15 +250,16 @@ async function handleDatesSet(arg: DatesSetArg) {
 }
 
 onMounted(async () => {
-  // 상품, 회원, 강사 데이터만 먼저 가져오기
+  // 상품, 회원, 강사, 수업 데이터만 먼저 가져오기
   // 이벤트는 handleDatesSet에서 로드됨
   await Promise.all([
     goodsStore.fetchAll(),
     membersStore.fetchAll(),
-    staffStore.fetchAll()
+    staffStore.fetchAll(),
+    classStore.fetchAll()
   ]);
 
-  console.log('[CalendarView] Initial data loaded (goods, members, staff)');
+  console.log('[CalendarView] Initial data loaded (goods, members, staff, class)');
 });
 
 const formatDateTimeLocal = (dateStr: string, allDay: boolean = false) => {
@@ -358,6 +414,7 @@ function closeDialog() {
   dialog.value = false;
   eventTitle.value = '';
   goodsIdx.value = null;
+  classIdx.value = null;
   memberIdx.value = null;
   staffIdx.value = null;
   eventMemo.value = '';
@@ -402,6 +459,27 @@ function closeEditDialog() {
                 <v-list-item-subtitle>
                   {{ item.raw.duration }}개월 / {{ item.raw.useCount }}회
                   - 현금: {{ item.raw.cash?.toLocaleString() }}원
+                </v-list-item-subtitle>
+              </v-list-item>
+            </template>
+          </v-autocomplete>
+
+          <v-autocomplete
+            v-model="classIdx"
+            :items="classList"
+            item-value="idx"
+            item-title="className"
+            label="수업 선택"
+            placeholder="선택하지 않음 (선택사항)"
+            variant="outlined"
+            clearable
+            no-data-text="수업이 없습니다"
+          >
+            <template v-slot:item="{ props, item }">
+              <v-list-item v-bind="props">
+                <v-list-item-title>{{ item.raw.className }}</v-list-item-title>
+                <v-list-item-subtitle>
+                  {{ item.raw.description || '-' }}
                 </v-list-item-subtitle>
               </v-list-item>
             </template>
@@ -468,8 +546,11 @@ function closeEditDialog() {
           ></v-text-field>
           <v-checkbox
             v-model="eventAllDay"
-            label="종일"
-          ></v-checkbox>
+          >
+            <template v-slot:label>
+              <span style="color: #121212;">종일</span>
+            </template>
+          </v-checkbox>
           <v-text-field
             v-model="eventStart"
             :label="eventAllDay ? '시작 날짜' : '시작 시간'"

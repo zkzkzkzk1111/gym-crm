@@ -5,6 +5,16 @@
   .logo {
     padding-left: 7px;
   }
+  .v-list{
+    background:#121212;
+    color:#fff;
+  }
+  .v-list-subheader__text{
+    color:#fff;
+  }
+  .v-navigation-drawer__content{
+    background:#121212;
+  }
 }
 /*This is for the Vertical sidebar*/
 .scrollnavbar {
@@ -79,7 +89,7 @@
         height: calc(100% - 46px);
         width: 1px;
         opacity: 1;
-        background: rgb(var(--v-theme-primary), 0.15);
+        background: rgb(var(--v-theme-secondary), 0.15);
       }
     }
   }
@@ -92,6 +102,7 @@
   .leftPadding {
     margin-left: 0px;
   }
+
 }
 @media only screen and (min-width: 1170px) {
   .mini-sidebar {

@@ -22,7 +22,7 @@ import { shallowRef } from 'vue';
 footer {
   a {
     &:hover {
-      color: rgb(var(--v-theme-primary)) !important;
+      color: rgb(var(--v-theme-secondary)) !important;
     }
   }
 }

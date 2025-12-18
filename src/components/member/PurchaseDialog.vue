@@ -71,12 +71,12 @@ function handleClose() {
 <template>
   <v-dialog :model-value="dialog" max-width="1200px" scrollable @update:model-value="handleClose">
     <v-card>
-      <v-card-title class="text-h5 bg-primary text-white">
-        <v-icon class="mr-2">mdi-shopping</v-icon>
+      <v-card-title class="text-h5 bg-primary text-white" style="display:flex; align-items:center">
+        <v-icon class="mr-2">$shopping</v-icon>
         상품 구매
         <v-spacer></v-spacer>
-        <v-btn icon @click="handleClose" variant="text">
-          <v-icon color="white">mdi-close</v-icon>
+        <v-btn icon @click="handleClose" variant="text" >
+          <v-icon color="white">$close</v-icon>
         </v-btn>
       </v-card-title>
 
@@ -114,7 +114,7 @@ function handleClose() {
                     </v-card-text>
                     <v-card-actions>
                       <v-btn color="primary" variant="text" size="small" block>
-                        <v-icon left>mdi-cart-plus</v-icon>
+                        <v-icon start>$cartPlus</v-icon>
                         담기
                       </v-btn>
                     </v-card-actions>
@@ -128,7 +128,7 @@ function handleClose() {
           <v-col cols="12" md="4">
             <v-card elevation="3" class="sticky-cart">
               <v-card-title class="bg-grey-lighten-4 d-flex align-center">
-                <v-icon class="mr-2">mdi-cart</v-icon>
+                <v-icon class="mr-2">$cart</v-icon>
                 장바구니
                 <v-chip class="ml-2" size="small" color="primary">{{ cart.length }}</v-chip>
                 <v-spacer></v-spacer>
@@ -140,7 +140,7 @@ function handleClose() {
                   variant="text"
                   @click="clearCart"
                 >
-                  <v-icon>mdi-delete-sweep</v-icon>
+                  <v-icon>$deleteSweep</v-icon>
                 </v-btn>
               </v-card-title>
 
@@ -148,7 +148,7 @@ function handleClose() {
 
               <v-card-text style="max-height: 400px; overflow-y: auto;">
                 <div v-if="cart.length === 0" class="text-center py-8 text-grey">
-                  <v-icon size="64" color="grey-lighten-1">mdi-cart-outline</v-icon>
+                  <v-icon size="64" color="grey-lighten-1">$cartOutline</v-icon>
                   <p class="mt-3">상품을 선택해주세요</p>
                 </div>
 
@@ -156,7 +156,7 @@ function handleClose() {
                   <v-list-item v-for="(item, index) in cart" :key="index" class="mb-3 border rounded pa-2">
                     <div class="w-100">
                       <div class="d-flex align-center mb-2">
-                        <v-icon color="primary" class="mr-2">mdi-package-variant</v-icon>
+                        <v-icon color="primary" class="mr-2">$packageVariant</v-icon>
                         <div class="flex-grow-1">
                           <div class="font-weight-bold">{{ item.goodsName }}</div>
                           <div class="text-caption text-grey">
@@ -170,7 +170,7 @@ function handleClose() {
                           variant="text"
                           @click="removeFromCart(index)"
                         >
-                          <v-icon>mdi-delete</v-icon>
+                          <v-icon>$delete</v-icon>
                         </v-btn>
                       </div>
 
@@ -199,7 +199,7 @@ function handleClose() {
                             variant="text"
                             @click="updateQuantity(index, item.quantity - 1)"
                           >
-                            <v-icon>mdi-minus</v-icon>
+                            <v-icon>$minus</v-icon>
                           </v-btn>
                           <span class="mx-3 font-weight-bold">{{ item.quantity }}</span>
                           <v-btn
@@ -208,7 +208,7 @@ function handleClose() {
                             variant="text"
                             @click="updateQuantity(index, item.quantity + 1)"
                           >
-                            <v-icon>mdi-plus</v-icon>
+                            <v-icon>$plus</v-icon>
                           </v-btn>
                         </div>
                         <div class="text-h6 text-primary font-weight-bold">
@@ -230,14 +230,14 @@ function handleClose() {
                   </span>
                 </div>
                 <v-btn
-                  color="success"
+                  class="purchase-btn"
                   variant="elevated"
                   block
                   size="large"
                   :disabled="cart.length === 0"
                   @click="handlePurchase"
                 >
-                  <v-icon left>mdi-credit-card</v-icon>
+                  <v-icon start>$creditCard</v-icon>
                   결제하기
                 </v-btn>
               </v-card-text>
@@ -250,6 +250,24 @@ function handleClose() {
 </template>
 
 <style scoped>
+.purchase-btn {
+  background-color: #121212 !important;
+  color: white !important;
+}
+
+.purchase-btn:hover {
+  background-color: #2a2a2a !important;
+}
+
+.purchase-btn:deep(.v-btn__overlay) {
+  display: none !important;
+}
+
+.purchase-btn.v-btn--disabled {
+  background-color: #cccccc !important;
+  color: rgba(0, 0, 0, 0.26) !important;
+}
+
 .cursor-pointer {
   cursor: pointer;
 }
