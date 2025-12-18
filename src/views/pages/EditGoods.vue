@@ -7,7 +7,6 @@ import { useStaffStore } from '@/stores/staff';
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
-import type { Goods } from '@/models/Goods';
 
 const route = useRoute();
 const router = useRouter();
@@ -75,8 +74,6 @@ async function submit(event:SubmitEvent) {
         if (goods.value.cash) goodsRequest.cash = Number(goods.value.cash);
         if (goods.value.card) goodsRequest.card = Number(goods.value.card);
         if (goods.value.description) goodsRequest.description = goods.value.description;
-
-        console.log('Sending goodsRequest:', goodsRequest);
 
         try {
             if (route.params['id']) {
@@ -172,6 +169,7 @@ async function submit(event:SubmitEvent) {
                               clearable
                             ></v-select>
                           </v-col>
+
                         </v-row>
                     </v-container>
                     <v-divider></v-divider>
@@ -184,7 +182,7 @@ async function submit(event:SubmitEvent) {
                                 </v-btn>
 
                                 <v-btn @click="onCancel" color="primary" variant="outlined">
-                                    취소
+                                  취소
                                 </v-btn>
                             </div>
                         </v-col>

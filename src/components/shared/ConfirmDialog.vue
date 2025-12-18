@@ -1,37 +1,75 @@
-<script setup>
-const props = defineProps({
-    dialog: false
-})
+<script setup lang="ts">
+interface Props {
+  modelValue: boolean;
+  title?: string;
+  message?: string;
+  icon?: string;
+  confirmText?: string;
+  cancelText?: string;
+  confirmColor?: string;
+  cancelColor?: string;
+}
 
-defineEmits(['onConfirm', 'onCancel'])
+interface Emits {
+  (e: 'update:modelValue', value: boolean): void;
+  (e: 'confirm'): void;
+  (e: 'cancel'): void;
+}
 
+const props = withDefaults(defineProps<Props>(), {
+  title: '확인',
+  message: '이 작업을 실행하시겠습니까?',
+  icon: 'mdi-alert-circle-outline',
+  confirmText: '확인',
+  cancelText: '취소',
+  confirmColor: 'primary',
+  cancelColor: 'secondary'
+});
 
+const emit = defineEmits<Emits>();
+
+const handleConfirm = () => {
+  emit('confirm');
+  emit('update:modelValue', false);
+};
+
+const handleCancel = () => {
+  emit('cancel');
+  emit('update:modelValue', false);
+};
 </script>
+
 <template>
-    <div class="text-center pa-4">
-      <v-dialog
-        v-model="props.dialog"
-        max-width="400"
-        persistent
-      >
-  
-        <v-card
-          prepend-icon="mdi-map-marker"
-          text="Would you like to delete this record?"
-          title="Confirm Dialog"
+  <v-dialog
+    :model-value="modelValue"
+    @update:model-value="emit('update:modelValue', $event)"
+    max-width="400"
+    persistent
+  >
+    <v-card
+      :prepend-icon="icon"
+      :text="message"
+      :title="title"
+    >
+      <template v-slot:actions>
+        <v-spacer></v-spacer>
+
+        <v-btn
+          @click="handleCancel"
+          :color="cancelColor"
+          variant="text"
         >
-          <template v-slot:actions>
-            <v-spacer></v-spacer>
-  
-            <v-btn @click="$emit('onConfirm')" color="secondary" variant="plain">
-              Confirm
-            </v-btn>
-  
-            <v-btn @click="$emit('onCancel')" color="primary" variant="outlined">
-              Cancel
-            </v-btn>
-          </template>
-        </v-card>
-      </v-dialog>
-    </div>
-  </template>
+          {{ cancelText }}
+        </v-btn>
+
+        <v-btn
+          @click="handleConfirm"
+          :color="confirmColor"
+          variant="elevated"
+        >
+          {{ confirmText }}
+        </v-btn>
+      </template>
+    </v-card>
+  </v-dialog>
+</template>

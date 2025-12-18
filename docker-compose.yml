@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  vuejs-crm:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vuejs-crm
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    networks:
+      - crm-network
+
+networks:
+  crm-network:
+    driver: bridge

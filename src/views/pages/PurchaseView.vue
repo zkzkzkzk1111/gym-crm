@@ -1,141 +1,115 @@
 <script setup lang="ts">
-import { useOrdersStore } from "@/stores/orders";
+import { usePurchaseStore } from "@/stores/purchase";
 import UiParentCard from "@/components/shared/UiParentCard.vue";
 import UiMainContainer from "@/components/shared/UiMainContainer.vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import ConfirmDialog from "@/components/shared/ConfirmDialog.vue";
 import NotificationBar from "@/components/shared/NotificeBar.vue";
 import { router } from "@/router";
-import { toTitleCase } from "@/utils/locales/format";
 
 const headers = [
-  { title: "번호", key: "idx", algin: "start" },
-  { title: "타입", key: "type", algin: "start" },
-  { title: "상품명", key: "name", algin: "end" },
-  { title: "구매자", key: "buyer", algin: "end" },
-  { title: "갯수", key: "cnt", algin: "start" },
-  { title: "가격", key: "price", algin: "end" },
-  { title: "결제수단", key: "paymentMethod", algin: "end" },
-  { title: "결제일", key: "paidAt", algin: "end" },
-  { title: "상태", key: "statusName", algin: "end" },
-];
 
-const orderStore = useOrdersStore();
-orderStore.getAll()
-const { filteredData } = storeToRefs(orderStore)
-const dialog = ref(false)
-const search = ref('')
-const notice = ref(false)
-const selectedId = ref('')
-const AVATAR_PLACEHOLDER = "/src/assets/images/order/avatar-0.webp"
+  { title: "타입", key: "type", align: "start" },
+  { title: "상품명", key: "name", align: "start" },
+  { title: "구매자", key: "buyer", align: "start" },
+  { title: "갯수", key: "cnt", align: "start" },
+  { title: "가격", key: "price", align: "end" },
+  { title: "결제수단", key: "paymentMethod", align: "start" },
+  { title: "결제일", key: "paidAt", align: "start" },
+  { title: "연락처", key: "phone", align: "start" },
+  { title: "상태", key: "statusName", align: "start" },
+  { title: "", key: "idx", align: "end" },
+] as const;
 
-function editOrder(id: string) {
-  router.replace({ path: `/order/${id}` });
+const purchaseStore = usePurchaseStore();
+const { filteredPurchases, loading } = storeToRefs(purchaseStore);
+const dialog = ref(false);
+const search = ref('');
+const notice = ref(false);
+const selectedId = ref<number | null>(null);
+
+onMounted(() => {
+  purchaseStore.fetchAll();
+});
+
+function editPurchase(idx: number) {
+  router.replace({ path: `/purchase/${idx}` });
 }
 
-function deleteOrder(id: string) {
-  dialog.value = true
-  selectedId.value = id
+function deletePurchase(idx: number) {
+  dialog.value = true;
+  selectedId.value = idx;
 }
 
 function onConfirm() {
-  if (selectedId.value) {
-    orderStore.delteOrder(selectedId.value)
+  if (selectedId.value !== null) {
+    purchaseStore.deletePurchase(selectedId.value)
       .then((res) => {
-        dialog.value = false
-        if (res.status) {
-          notice.value = true
+        dialog.value = false;
+        if (res.success) {
+          notice.value = true;
           setTimeout(() => {
             notice.value = false;
-            orderStore.getAll()
-          }, 1000)
+            purchaseStore.fetchAll();
+          }, 1000);
         }
       })
-      .finally(() => selectedId.value = '');
+      .finally(() => selectedId.value = null);
   }
 }
 
 function onCancel() {
-  dialog.value = false
+  dialog.value = false;
 }
 
 function onClose() {
-  notice.value = false
+  notice.value = false;
 }
 
-
-function getColor(deliveryStatus: string): string {
-  switch (deliveryStatus) {
-    case 'delivered':
-      return 'success'
-    case 'packaging':
-      return 'error'
-    case 'customs-clearance':
-      return 'info'
-    case 'shipping':
-      return 'warning'
+function getStatusColor(status: number): string {
+  switch (status) {
+    case 1:
+      return 'success';
+    case 0:
+      return 'warning';
+    case -1:
+      return 'error';
     default:
-      return ''
+      return 'info';
   }
 }
 </script>
 
 <template>
   <UiMainContainer>
-    <UiParentCard title="Orders">
-      <div v-if="orderStore.loading">
-        <v-progress-linear  color="secondary" height="6" indeterminate rounded></v-progress-linear>
+    <UiParentCard title="구매 내역">
+      <div v-if="loading">
+        <v-progress-linear color="secondary" height="6" indeterminate rounded></v-progress-linear>
       </div>
-      <div v-if="!orderStore.loading">
-        <v-data-table :headers="headers" :items="filteredData" :search="search" show-expand>
+      <div v-if="!loading">
+        <v-data-table :headers="headers" :items="filteredPurchases" :search="search">
           <template v-slot:top>
-            <v-text-field v-model="search" variant="solo-filled" class="pa-2" label="Filter"></v-text-field>
+            <v-text-field v-model="search" variant="solo-filled" class="pa-2" label="검색"></v-text-field>
           </template>
-          <template v-slot:item.delivery="{ value }">
-            <v-chip :border="`${getColor(value)} thin opacity-10`"  :color="getColor(value)" :text="toTitleCase(value)"
-              size="small"></v-chip>
+          <template v-slot:[`item.price`]="{ value }">
+            {{ value?.toLocaleString() }}원
           </template>
-          <template v-slot:item.data-table-expand="{ internalItem, isExpanded, toggleExpand }">
-            <v-btn :append-icon="isExpanded(internalItem) ? '$collapse' : '$expand'"
-              :text="isExpanded(internalItem) ? 'Collapse' : 'Address'" class="text-none" color="medium-emphasis"
-              size="small" variant="text" border slim @click="toggleExpand(internalItem)"></v-btn>
+          <template v-slot:[`item.statusName`]="{ item }">
+            <v-chip :color="getStatusColor(item.status)" size="small">
+              {{ item.statusName }}
+            </v-chip>
           </template>
-
-          <template v-slot:expanded-row="{ columns, item }">
-            <tr>
-              <td :colspan="columns.length" class="py-2">
-                <v-sheet rounded="lg" border>
-                  <v-table density="compact">
-                    <tbody class="bg-surface-light">
-                      <tr>
-                        <th>phone</th>
-                      </tr>
-                    </tbody>
-
-                    <tbody>
-                      <tr>
-                        <td>
-                          {{ item.shippingAddress.street }}
-                        </td>
-
-                      </tr>
-                    </tbody>
-                  </v-table>
-                </v-sheet>
-              </td>
-            </tr>
-          </template>
-          <template v-slot:item.id="{ value }" v-slot:append>
+          <template v-slot:[`item.idx`]="{ value }">
             <div class="d-flex ga-6 p-r-5 justify-end">
-              <v-icon color="secondary" icon="$edit" size="x-large" @click="editOrder(value)"></v-icon>
-              <v-icon color="disabled" icon="$delete" size="x-large" @click="deleteOrder(value)"></v-icon>
+              <v-icon color="secondary" icon="$edit" size="x-large" @click="editPurchase(value)"></v-icon>
+              <v-icon color="disabled" icon="$delete" size="x-large" @click="deletePurchase(value)"></v-icon>
             </div>
           </template>
         </v-data-table>
       </div>
     </UiParentCard>
-    <ConfirmDialog :dialog="dialog" @onConfirm="onConfirm" @onCancel="onCancel" />
+    <ConfirmDialog v-model="dialog" @confirm="onConfirm" @cancel="onCancel" />
     <NotificationBar :notice="notice" @onClose="onClose" />
   </UiMainContainer>
 </template>

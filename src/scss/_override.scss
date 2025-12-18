@@ -62,3 +62,12 @@ html {
     }
   }
 }
+
+// Vuetify Grid Override
+@media (min-width: 1280px) {
+  .v-col-lg-8 {
+
+    flex: 100%;
+    max-width: 100%;
+  }
+}

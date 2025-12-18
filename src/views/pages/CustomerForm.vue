@@ -135,11 +135,11 @@ async function submit(event:any) {
                             <v-spacer></v-spacer>
                             <div class="d-flex ga-6 mt-8 justify-end">
                                 <v-btn      :loading="loading" color="secondary" variant="flat" type="submit" @click="submit">
-                                    Submit
+                                    등록
                                 </v-btn>
 
                                 <v-btn @click="onCancel" color="primary" variant="outlined">
-                                    Cancel
+                                  취소
                                 </v-btn>
                             </div>
                         </v-col>

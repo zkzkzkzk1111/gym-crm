@@ -14,7 +14,8 @@ Stack3Icon,
   TruckDeliveryIcon,
   ArticleIcon,
   TemplateIcon,
-  UserDollarIcon
+  UserDollarIcon,
+  CalendarIcon
 } from 'vue-tabler-icons';
 
 export interface menu {
@@ -40,20 +41,37 @@ const sidebarItem: menu[] = [
     icon: DashboardIcon,
     to: '/dashboard'
   },
+
   {
-    title: 'Customer',
+    title: '회원관리',
     icon: UsersIcon,
-    to: '/customer'
+    to: '/member'
   },
   {
-    title: 'Product',
-    icon: Stack3Icon,
-    to: '/product'
+    title: '직원관리',
+    icon: UsersIcon,
+    to: '/staff'
   },
   {
-    title: 'Order',
+    title: '상품관리',
+    icon: UsersIcon,
+    to: '/goods'
+  },
+  {
+    title: '수업관리',
+    icon: UsersIcon,
+    to: '/class'
+  },
+  {
+    title: '일정관리',
+    icon: CalendarIcon,
+    to: '/calendar'
+  },
+
+  {
+    title: '구매목록',
     icon: TruckDeliveryIcon,
-    to: '/order'
+    to: '/purchase'
   },
   { divider: true },
   { header: 'Marketing' }
